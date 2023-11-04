@@ -13,7 +13,7 @@ body {
     max-width: 480px;
     margin: auto;
     font-family: 'Sometype Mono', monospace;
-    padding: 20px 0;
+    padding: 20px;
     color: var(--text-color);
 }
 
@@ -74,6 +74,9 @@ body {
 .label {
     margin-top: 20px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .field {
@@ -84,9 +87,10 @@ body {
 
 .cell {
     background-color: #283e4b;
-    height: 120px;
+    height: 0;
+    padding-bottom: 100%;
     border-radius: 20px;
-    box-shadow: 0 20px 25px -5px #0000001a,0 8px 10px -6px #0000001a;
+    box-shadow: 0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a;
     transition: .3s all;
 }
 
@@ -97,7 +101,8 @@ body {
     background-repeat: no-repeat;
     background-position: center;
 }
-.cell-x.cell-win{
+
+.cell-x.cell-win {
     background-color: var(--accent-color);
 }
 
@@ -109,7 +114,7 @@ body {
     background-position: center;
 }
 
-.cell-o.cell-win{
+.cell-o.cell-win {
     background-color: var(--accent-color);
 }
 
@@ -141,8 +146,8 @@ body {
 }
 
 .header-middle {
-    width: 33.33%;
-    box-shadow: 0 20px 25px -5px #0000001a,0 8px 10px -6px #0000001a;
+    width: 45%;
+    box-shadow: 0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a;
     background: #283e4b;
     padding: 20px 0;
     border-radius: 20px;
@@ -150,8 +155,9 @@ body {
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    font-size: 22px;
+    font-size: 16px;
 }
+
 .header-middle .current-turn {
     margin-right: 10px;
     background-size: cover;
@@ -205,14 +211,15 @@ body {
     bottom: 0;
     right: 0;
     left: 0;
-    background: rgba(255,255,255, 0.2);
-    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
     justify-content: center;
     display: flex;
 }
 
 .modal-content {
     width: 320px;
+    height: 130px;
+    margin-top: 50px;
     background: #fff;
     padding: 20px;
     padding-bottom: 10px;
@@ -251,4 +258,18 @@ body {
     background: var(--accent-color);
     color: #000;
     border-radius: 20px;
+}
+
+.active {
+    color: var(--accent-color);
+}
+
+.copy {
+    width: 30px;
+    height: 30px;
+    background-image: url('../images/copy.svg');
+    background-color: red;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 25px;
 }

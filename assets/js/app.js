@@ -1,7 +1,7 @@
-import {Host} from './host.js'
-import {Recipient} from './recipient.js'
-import {TicTacToe} from './tictactoe.js'
-import {Statistic} from './statistic.js'
+import { Host } from './host.js'
+import { Recipient } from './recipient.js'
+import { TicTacToe } from './tictactoe.js'
+import { Statistic } from './statistic.js'
 
 class App {
     constructor() {
@@ -14,7 +14,7 @@ class App {
         this.init()
     }
 
-    hostButton () {
+    hostButton() {
         const buttonHost = document.createElement('button')
         buttonHost.classList.add('btn', 'btn-1')
         buttonHost.textContent = 'Hots game'
@@ -22,13 +22,13 @@ class App {
         buttonHost.addEventListener('click', () => this.hostButtonListener())
     }
 
-    async hostButtonListener (e) {
+    async hostButtonListener(e) {
         this.game.innerHTML = ''
         this.user = 'x'
         await this.host.init()
     }
 
-    joinButton () {
+    joinButton() {
         const buttonJoin = document.createElement('button')
         buttonJoin.classList.add('btn', 'btn-2')
         buttonJoin.textContent = 'Join game'
@@ -36,72 +36,57 @@ class App {
         buttonJoin.addEventListener('click', () => this.joinButtonListener())
     }
 
-    async joinButtonListener (e) {
+    async joinButtonListener(e) {
         this.game.innerHTML = ''
         this.user = 'o'
         await this.recipient.init()
     }
 
-    startGame () {
+    startGame() {
         this.game.innerHTML = ''
         this.ticTacToe.start(this.user)
     }
 
-    turnSend (e) {
-        if(e.isEnd) {
-            if(e.isVictory) {
-                this.statistic[e.winner] = ++this.statistic[e.winner]
-            } else {
-                this.statistic.ties = ++this.statistic.ties
-            }
+    victoryHandler(e) {
+        this.statistic[e.winner] = ++this.statistic[e.winner]
+        this.showVictoryModal(e)
+    }
+
+    drawHandler(e) {
+        this.statistic.ties = ++this.statistic.ties
+        this.showVictoryModal(e)
+    }
+
+    turnSend(e) {
+        if (e.isEnd && e.isVictory) {
+            this.victoryHandler(e)
         }
-        if(this.user === 'x') {
-            if(e.isEnd) {
-                if(e.isVictory) {
-                    this.host.dc.send(JSON.stringify(e))
-                    this.showVictoryModal(true)
-                } else {
-                    this.host.dc.send(JSON.stringify(e))
-                    this.showVictoryModal(false, true)
-                }
-                return
-            }
-            this.host.dc.send(JSON.stringify({
-                index: e,
-                user: 'x'
-            }))
+        if (e.isEnd && !e.isVictory) {
+            this.drawHandler(e)
+        }
+        if (this.user === 'x') {
+            this.host.dc.send(JSON.stringify(e))
         } else {
-            if(e.isVictory) {
-                this.recipient.dc.send(JSON.stringify(e))
-                this.showVictoryModal(true)
-                return
-            }
-            this.recipient.dc.send(JSON.stringify({
-                index: e,
-                user: 'o'
-            }))
+            this.recipient.dc.send(JSON.stringify(e))
         }
     }
 
-    turnReceive (e) {
+    turnReceive(e) {
         const data = JSON.parse(e.data)
-
-        if(data.isEnd) {
-            if(data.isVictory) {
-                this.showVictoryModal()
-                this.statistic[data.winner] = ++this.statistic[data.winner]
-            } else {
-                this.showVictoryModal(false, true)
-                this.statistic.ties = ++this.statistic.ties
-            }
+        if (data.isEnd && data.isVictory) {
+            this.victoryHandler(data)
             return
         }
-        if(data.restart) {
+        if (data.isEnd && !data.isVictory) {
+            this.drawHandler(data)
+            return
+        }
+        if (data.restart) {
             this.restartGame()
             return
         }
         this.ticTacToe.setByIndex(data.index)
-        this.ticTacToe.changeTurn(data.user === 'x' ? 'o' : 'x' )
+        this.ticTacToe.changeTurn()
     }
 
     restartGame() {
@@ -111,7 +96,7 @@ class App {
         this.ticTacToe.restart()
     }
 
-    showVictoryModal (isWin, isDraw) {
+    showVictoryModal(e) {
         const modal = document.createElement('div')
         modal.classList.add('modal')
 
@@ -119,12 +104,13 @@ class App {
         content.classList.add('modal-content')
 
         const title = document.createElement('p')
-        if(isDraw) {
+        if (e.isEnd && !e.isVictory) {
             title.textContent = 'Draw'
         } else {
-            title.textContent = isWin ? 'You win' : 'You lose'
+            title.textContent = `${e.winner.toUpperCase()} is win`
+            this.ticTacToe.highlightCell(e.comb)
         }
-        
+
         const button = document.createElement('button')
         button.textContent = this.user === 'x' ? 'Again' : 'Waiting the host'
         button.classList.add('btn', 'btn-1')

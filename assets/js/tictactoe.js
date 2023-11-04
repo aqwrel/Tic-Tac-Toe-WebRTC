@@ -10,14 +10,14 @@ export class TicTacToe {
     createHeader() {
         const wrapper = document.createElement('div')
         wrapper.classList.add('header')
-        
+
         const headerLeft = document.createElement('div')
         headerLeft.classList.add('header-left')
 
         const text = document.createElement('p')
         text.textContent = 'YOU:'
         headerLeft.appendChild(text)
-        if(this.user === 'x') {
+        if (this.user === 'x') {
             const cross = document.createElement('div')
             cross.classList.add('cross')
             headerLeft.appendChild(cross)
@@ -33,11 +33,11 @@ export class TicTacToe {
         headerMiddle.classList.add('header-middle')
 
         const headerMiddleTurn = document.createElement('span')
-        headerMiddleTurn.textContent = 'Turn'
+        if (this.currentTurn === this.user) {
+            headerMiddleTurn.classList.add('active')
+        }
+        headerMiddleTurn.textContent = this.currentTurn === this.user ? 'You turn' : 'Opponent turn'
 
-        const turn = document.createElement('div')
-        turn.classList.add(this.currentTurn, 'current-turn')
-        headerMiddle.appendChild(turn)
         headerMiddle.appendChild(headerMiddleTurn)
         wrapper.appendChild(headerMiddle)
 
@@ -90,11 +90,15 @@ export class TicTacToe {
         this.game.appendChild(wrapper)
     }
 
-    changeTurn (data) {
-        this.currentTurn = data
-        const turn = document.querySelector('.current-turn')
-        turn.classList.remove('x', 'o')
-        turn.classList.add(this.currentTurn)
+    changeTurn() {
+        this.currentTurn = this.currentTurn === 'x' ? 'o' : 'x'
+        const turn = document.querySelector('.header-middle span')
+        turn.textContent = this.currentTurn === this.user ? 'You turn' : 'Opponent turn'
+        if (this.currentTurn === this.user) {
+            turn.classList.add('active')
+        } else {
+            turn.classList.remove('active')
+        }
     }
 
     createCell() {
@@ -102,7 +106,7 @@ export class TicTacToe {
         wrapper.classList.add('field')
         for (let i = 0; i < 9; i++) {
             const cell = document.createElement('div')
-            cell.addEventListener('click', (e) => {this.cellListener(e, i)})
+            cell.addEventListener('click', (e) => { this.cellListener(e, i) })
             cell.classList.add('cell')
             wrapper.appendChild(cell)
         }
@@ -110,17 +114,19 @@ export class TicTacToe {
     }
 
     cellListener(e, index) {
-        if(this.currentTurn !== this.user) return
-        if(e.target.classList.contains('cell-x') || e.target.classList.contains('cell-o')) return
+        if (this.currentTurn !== this.user) return
+        if (e.target.classList.contains('cell-x') || e.target.classList.contains('cell-o')) return
         e.target.classList.add(`cell-${this.currentTurn}`)
         this.turnListener(index)
     }
 
     turnListener(index) {
-        this.changeTurn(this.currentTurn === 'x' ? 'o' : 'x')
-        this.send(index)
-        this.isVictory()
-        this.isEnd()
+        this.changeTurn()
+        this.send({ index })
+        const isWin = this.isVictory()
+        if (!isWin) {
+            this.isEnd()
+        }
     }
 
     isVictory() {
@@ -136,10 +142,10 @@ export class TicTacToe {
             [2, 4, 6],
         ];
         const cells = cellsBlocks.map((item) => {
-            if(item.classList.contains('cell-x')) {
+            if (item.classList.contains('cell-x')) {
                 return 'x'
             }
-            if(item.classList.contains('cell-o')) {
+            if (item.classList.contains('cell-o')) {
                 return 'o'
             }
             return null
@@ -150,35 +156,31 @@ export class TicTacToe {
                 cells[comb[1]] == cells[comb[2]] &&
                 cells[comb[0]] != undefined
             ) {
-                cellsBlocks[comb[0]].classList.add('cell-win')
-                cellsBlocks[comb[1]].classList.add('cell-win')
-                cellsBlocks[comb[2]].classList.add('cell-win')
-                setTimeout(() => {
-                    this.send({
-                        isEnd: true,
-                        isVictory: true,
-                        winner: cells[comb[0]]
-                    })
-                }, 500);
+                this.send({
+                    isEnd: true,
+                    isVictory: true,
+                    comb: [comb[0], comb[1], comb[2]],
+                    winner: cells[comb[0]]
+                })
                 return cells[comb[0]];
             }
         }
-        
+
         return false;
     }
 
     isEnd() {
         const cells = [...document.querySelectorAll('.cell')].map((item) => {
-            if(item.classList.contains('cell-x')) {
+            if (item.classList.contains('cell-x')) {
                 return 'x'
             }
-            if(item.classList.contains('cell-o')) {
+            if (item.classList.contains('cell-o')) {
                 return 'o'
             }
             return null
         })
         const isEnd = !cells.includes(null)
-        if(isEnd) {
+        if (isEnd) {
             this.send({
                 isEnd: true,
                 isVictory: false,
@@ -187,9 +189,16 @@ export class TicTacToe {
         }
     }
 
-    setByIndex (index) {
+    setByIndex(index) {
         const cells = [...document.querySelectorAll('.cell')]
         cells[index].classList.add(`cell-${this.currentTurn}`)
+    }
+
+    highlightCell(arr) {
+        const cells = [...document.querySelectorAll('.cell')]
+        arr.forEach(item => {
+            cells[item].classList.add('cell-win')
+        });
     }
 
     restart() {

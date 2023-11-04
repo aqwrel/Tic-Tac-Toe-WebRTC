@@ -10,7 +10,7 @@ export class Host {
     }
 
     async createOfferSDP() {
-        this.dc = this.pc.createDataChannel("chat");
+        this.dc = this.pc.createDataChannel("game");
         const data = await this.pc.createOffer()
         this.pc.setLocalDescription(data)
         this.dc.onopen = () => {
@@ -37,7 +37,17 @@ export class Host {
         const wrapper = document.createElement('div')
         const label = document.createElement('p')
         label.classList.add('label')
-        label.textContent = '1.CREATE Offer\'s SDP'
+        label.textContent = '1.Host SDP'
+
+        const copy = document.createElement('button')
+        copy.classList.add('copy')
+
+        label.appendChild(copy)
+
+        copy.addEventListener('click', () => {
+            navigator.clipboard.writeText(JSON.stringify(this.pc.localDescription));
+        })
+
         const sdp = document.createElement('textarea')
         sdp.classList.add('textarea')
         sdp.readOnly = true
@@ -51,7 +61,7 @@ export class Host {
         const wrapper = document.createElement('div')
         const label = document.createElement('p')
         label.classList.add('label')
-        label.textContent = '2.GET Participant\'s SDP'
+        label.textContent = '2.Participant\'S SDP'
         const sdp = document.createElement('textarea')
         sdp.classList.add('textarea')
         sdp.setAttribute('id', 'spd-participant')
