@@ -6,13 +6,13 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
+    font-family: 'Sometype Mono', monospace;
 }
 
 .app {
     width: 100%;
     max-width: 480px;
     margin: auto;
-    font-family: 'Sometype Mono', monospace;
     padding: 20px;
     color: var(--text-color);
 }
@@ -291,4 +291,15 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 25px;
+}
+
+.snackbar {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: red;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
 }

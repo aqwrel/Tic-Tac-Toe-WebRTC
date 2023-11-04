@@ -9,6 +9,15 @@ export class Recipient {
         this.turnReceive = turnReceive
     }
 
+    oniceconnectionstatechange(e) {
+        const state = this.pc.iceConnectionState;
+        console.log(state);
+        if(state === 'disconnected') {
+            if(!alert('Opponent is leave')) document.location = '/index.html';
+        }
+    }
+
+
     ondatachannel(e) {
         this.dc = e.channel;
         this.dcInit()
@@ -35,6 +44,17 @@ export class Recipient {
         wrapper.appendChild(label)
         wrapper.appendChild(sdp)
         this.game.appendChild(wrapper)
+    }
+
+    showError(text) {
+        const snackbar = document.createElement('div')
+        snackbar.classList.add('snackbar')
+        snackbar.textContent = text
+        document.body.appendChild(snackbar)
+
+        setTimeout(() => {
+            snackbar.remove()
+        }, 5000);
     }
 
     recipientSDP() {
@@ -73,7 +93,11 @@ export class Recipient {
 
     createButtonListener() {
         const spd = document.getElementById('spd').value
-        var offerDesc = new RTCSessionDescription(JSON.parse(spd));
+        if(!spd) {
+            this.showError('Enter Host SDP')
+            return
+        }
+        const offerDesc = new RTCSessionDescription(JSON.parse(spd));
         this.pc.setRemoteDescription(offerDesc)
         this.pc.createAnswer(
             (answerDesc) => this.pc.setLocalDescription(answerDesc),
@@ -92,6 +116,7 @@ export class Recipient {
         this.hostSDP()
         this.createButton()
         this.recipientSDP()
+        this.pc.oniceconnectionstatechange = this.oniceconnectionstatechange.bind(this)
         this.pc.ondatachannel = this.ondatachannel.bind(this)
         this.pc.onicecandidate = this.onicecandidate.bind(this)
     }

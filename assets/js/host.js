@@ -22,8 +22,11 @@ export class Host {
     };
 
     oniceconnectionstatechange(e) {
-        var state = this.pc.iceConnectionState;
+        const state = this.pc.iceConnectionState;
         console.log(state);
+        if(state === 'disconnected') {
+            if(!alert('Opponent is leave')) document.location = '/index.html';
+        }
     }
 
     onicecandidate(e) {
@@ -31,6 +34,17 @@ export class Host {
         this.createSDP()
         this.participantSDP()
         this.connectButton()
+    }
+
+    showError(text) {
+        const snackbar = document.createElement('div')
+        snackbar.classList.add('snackbar')
+        snackbar.textContent = text
+        document.body.appendChild(snackbar)
+
+        setTimeout(() => {
+            snackbar.remove()
+        }, 5000);
     }
 
     createSDP() {
@@ -73,6 +87,10 @@ export class Host {
 
     connectButtonListener() {
         const answerSDP = document.getElementById('spd-participant').value
+        if(!answerSDP) {
+            this.showError('Enter Participant\'S SDP')
+            return
+        }
         const answerDesc = new RTCSessionDescription(JSON.parse(answerSDP));
         this.pc.setRemoteDescription(answerDesc);
     }
