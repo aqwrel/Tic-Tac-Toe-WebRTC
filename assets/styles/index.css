@@ -229,6 +229,25 @@ body {
 .modal-content p {
     font-size: 25px;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content p .x {
+    background: url('../images/cross.svg');
+    background-size: cover;
+    width: 25px;
+    height: 25px;
+    margin-left: 20px;
+}
+
+.modal-content p .o {
+    background: url('../images/circle.svg');
+    background-size: cover;
+    width: 25px;
+    height: 25px;
+    margin-left: 20px;
 }
 
 .footer {

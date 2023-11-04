@@ -107,7 +107,10 @@ class App {
         if (e.isEnd && !e.isVictory) {
             title.textContent = 'Draw'
         } else {
-            title.textContent = `${e.winner.toUpperCase()} is win`
+            title.textContent = `Winner:`
+            const icon = document.createElement('span')
+            icon.classList.add(e.winner)
+            title.appendChild(icon)
             this.ticTacToe.highlightCell(e.comb)
         }
 
